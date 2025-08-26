@@ -834,7 +834,8 @@ function htmlToPdfMake(htmlText, options) {
               break;
             }
             case "font-weight": {
-              if (value === "bold") ret.push({key:"bold", value:true});
+              if (value === "bold" || value >= 700) ret.push({key:"bold", value:true});
+              else ret.push({ key: "bold", value: false });
               break;
             }
             case "text-decoration": {
@@ -868,8 +869,11 @@ function htmlToPdfMake(htmlText, options) {
             case "background-color": {
               // if TH/TD and key is 'background', then we use 'fillColor' instead
               res = _this.parseColor(value);
-              ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:res.color});
-              if (res.opacity < 1) ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillOpacity" : "opacity"), value:res.opacity});
+              // if the color is "transparent", we ignore it
+              if (res.color !== "transparent") {
+                ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:res.color});
+                if (res.opacity < 1) ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillOpacity" : "opacity"), value:res.opacity});
+              }
               break;
             }
             case "text-indent": {

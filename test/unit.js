@@ -36,6 +36,24 @@ test("unit tests", function(t) {
     t.finish();
   })
 
+  t.test("font-weight", function (t) {
+    var ret = htmlToPdfMake(`<div><span style="font-weight: bold">Bold</span><span style="font-weight:700">700<span style="font-weight: normal">normal</span></span></div>`, { window: window });
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+    ret = ret[0].text;
+    t.check(
+      ret[0].text === "Bold" &&
+      ret[0].bold === true &&
+      Array.isArray(ret[1].text) &&
+      ret[1].text[0].text === "700" &&
+      ret[1].text[0].bold === true &&
+      ret[1].text[1].text === "normal" &&
+      ret[1].text[1].bold === false &&
+    "font-weight");
+
+    t.finish();
+  })
+
   t.test("u",function(t) {
     var ret = htmlToPdfMake("<u>underline word</u>", {window:window});
     if (debug) console.log(JSON.stringify(ret));

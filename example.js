@@ -1,6 +1,6 @@
 var pdfMake = require("pdfmake/build/pdfmake");
 var pdfFonts = require("pdfmake/build/vfs_fonts");
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts;
 var fs = require("fs");
 var jsdom = require("jsdom");
 var { JSDOM } = jsdom;
@@ -222,8 +222,8 @@ var html = htmlToPdfMake(`
   <div>And support for <font color="blue" size="3">FONT</font> tag.</div>
 `, {window:window, tableAutoSize:true});
 
-/*var html = htmlToPdfMake(``, {window:window});
-console.log(JSON.stringify(html))*/
+// var html = htmlToPdfMake(``, {window:window});
+// console.log(JSON.stringify(html))
 
 var docDefinition = {
   content: [
