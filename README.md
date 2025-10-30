@@ -2,7 +2,9 @@
 
 Convert HTML to PDFMake format with ease. This library bridges the gap between HTML content and [PDFMake](https://pdfmake.github.io/docs/) document definitions, allowing you to generate PDFs from basic HTML while maintaining based styling and structure.
 
-**Note**: if you need to convert a complex HTML, check some online solutions, like [Doppio](https://doppio.sh/), or you could try to convert [your HTML to canvas](https://github.com/chearon/dropflow) or [to an image](https://github.com/zumerlab/snapdom) and then to [export it to PDF](https://github.com/parallax/jsPDF).
+**Note**: if you need to convert a complex HTML (e.g. something produced by a Rich Text Editor), check some online solutions, like [Doppio](https://doppio.sh/), or you could try to convert [your HTML to canvas](https://github.com/chearon/dropflow) or [to an image](https://github.com/zumerlab/snapdom) and then to [export it to PDF](https://github.com/parallax/jsPDF).
+
+This library will have the same limitation as PDFMake. If you need to verify if a style is supported by PDFMake, you can check [its documentation](https://deepwiki.com/bpampuch/pdfmake).
 
 ## Features
 

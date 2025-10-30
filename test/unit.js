@@ -1248,6 +1248,48 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("complex nested ul/ol with p tags", function (t) {
+    var html = `<ul><li><p><strong>sometitle</strong></p><ol><li><p><strong>sometitle2:</strong></p><ul><li><p>sometext</p></li><li><p>sometext</p></li><li><p>sometext</p></li><li><p>sometext</p></li></ul></li><li><p><strong>sometitle3:</strong></p><ul><li><p>sometext</p></li></ul></li><li><p><strong>sometitle4:</strong></p><ul><li><p>sometext</p></li><li><p>sometext</p></li><li><p>sometext</p></li></ul></li><li><p><strong>sometitle5:</strong></p><ul><li><p>sometext</p></li><li><p>sometext</p></li><li><p>sometext</p></li></ul></li><li><p><strong>sometitle6:</strong></p><ul><li><p>sometext</p></li></ul></li></ol><p><strong>sometitle7:</strong></p><ul><li><p>sometext</p></li><li><p>somtext</p></li></ul></li></ul>`;
+    var ret = htmlToPdfMake(html, {
+      window: window
+    });
+    if (debug) console.log(JSON.stringify(ret));
+
+    // 1. Basic structure check
+    t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+    t.check(ret[0].nodeName === "UL" && Array.isArray(ret[0].ul) && ret[0].ul.length === 1, "root is UL with one LI");
+
+    // 2. Check the main LI stack
+    var mainLiStack = ret[0].ul[0].stack[0].stack;
+    t.check(Array.isArray(mainLiStack) && mainLiStack.length === 3 && mainLiStack[0].nodeName === "P" && mainLiStack[1].nodeName === "OL" && mainLiStack[2].nodeName === "P", "main LI stack has 3 items (p, ol, p)");
+
+    // 3. Check 'sometitle' (first item in main stack)
+    // This path (mainLiStack[0].stack[0]...) passed, so we keep it.
+    t.check(mainLiStack[0].text[0].text === "sometitle", "first P (sometitle)");
+
+    // 4. Check the nested OL (second item in main stack)
+    var nestedOl = mainLiStack[1];
+    t.check(nestedOl.nodeName === "OL" && Array.isArray(nestedOl.ol) && nestedOl.ol.length === 5, "nested OL has 5 LIs");
+
+    // 5. Check 'sometitle2:' (first LI of the nested OL)
+    // Path: ret[0].ul[0].stack[1].ol[0].stack[0].text[0].text
+    var nestedLi1 = nestedOl.ol[0];
+    t.check(nestedLi1.stack[0].text[0].text[0].text === "sometitle2:", "nested OL LI 1 P (sometitle2:)");
+
+    // 6. Check "super grand child" (UL inside the first LI of the nested OL)
+    // Path: ret[0].ul[0].stack[1].ol[0].stack[1].ul[0].stack[0].text
+    var deepUl = nestedLi1.stack[1]; // This assumes stack[0] was the <p>
+    t.check(deepUl.nodeName === "UL" && Array.isArray(deepUl.ul) && deepUl.ul.length === 4, "deep UL has 4 LIs");
+    t.check(deepUl.ul[0].stack[0].text === "sometext", "deep UL LI 1 P (sometext)");
+    t.check(deepUl.ul[3].stack[0].text === "sometext", "deep UL LI 4 P (sometext)");
+
+    // 7. Check 'sometitle7:' (third item in main stack)
+    // Path: ret[0].ul[0].stack[2].text[0].text
+    t.check(mainLiStack[2].text[0].text === "sometitle7:", "second P (sometitle7:)");
+
+    t.finish();
+  });
+
   t.test("CSS units",function(t) {
     var html = `<div style="line-height:107%;font-size:large;width:110px;height:50pt;margin-left:1in;margin-top:2em;margin-right:1rem;margin-bottom:0.5cm">hello world</div>`;
     var ret = htmlToPdfMake(html, {

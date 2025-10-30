@@ -487,6 +487,7 @@ function htmlToPdfMake(htmlText, options) {
             ret[nodeNameLowerCase] = (ret.stack || ret.text).slice(0);
             delete ret.stack;
             delete ret.text;
+
             // apply all the inhirent classes and styles from the parents, or for the current element
             ret = this.applyStyle({ret:ret, parents:parents.concat([element])});
             // check if we have `start`
@@ -511,8 +512,10 @@ function htmlToPdfMake(htmlText, options) {
               // if not, we restructure our node
               // by moving the non-stack stuff inside a "text"
               text = ret.stack.slice(0, -1);
+              // make sure we only have 'text' as a child
+              // otherwise we switch to a stack
               ret = [
-                {"text": text}, // (Array.isArray(text) ? {"stack": text} : {"text": text}),
+                (Array.isArray(text) && text.filter(function(child) { return !child.text; }).length > 0 ? { "stack": text } : { "text": text }),
                 ret.stack[ret.stack.length-1]
               ];
             }
